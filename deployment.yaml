@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: devopssquad5
-        image: aryandoescode/maven-build:latest
+        image: sahanabhasme19/mavenbuild:v1
         resources:
           requests:
             cpu: 100m
@@ -37,27 +37,27 @@ spec:
   selector:
     app: devopssquad5
 ---
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: devopssquad5-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: devopssquad5
-  minReplicas: 3
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 50
-  - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 50
+# apiVersion: autoscaling/v2
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: devopssquad5-hpa
+# spec:
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: devopssquad5
+#   minReplicas: 3
+#   maxReplicas: 10
+#   metrics:
+#   - type: Resource
+#       resource:
+#         name: cpu
+#         target:
+#           type: Utilization
+#           averageUtilization: 50
+#   - type: Resource
+#       resource:
+#         name: memory
+#         target:
+#           type: Utilization
+#           averageUtilization: 50
