@@ -50,7 +50,7 @@ environment {
         stage("deploy to tomcat")
         {
 		when {
-			branch 'main'
+			branch 'master'
 		}
             steps{
                 script{
@@ -61,7 +61,7 @@ environment {
         
         stage('Building our image') {
 		when {
-			branch 'main'
+			branch 'master'
 		}
             steps{
                 script {
@@ -71,7 +71,7 @@ environment {
         }
         stage('Deploy our image') {
 		when {
-			branch 'main'
+			branch 'master'
 		}
             steps{
                 script {
@@ -83,7 +83,7 @@ environment {
         }
         stage('Cleaning up') {
 		when {
-			branch 'main'
+			branch 'master'
 		}
             steps{
                 sh "docker rmi sahanabhasme19/mavenbuild:v1"
@@ -92,7 +92,7 @@ environment {
         }
         stage('Aks Context set') {
 		when {
-			branch 'main'
+			branch 'master'
 		}
             steps{
                 sh "az aks get-credentials --resource-group aks-k8s-resources --name aks-k8s"
