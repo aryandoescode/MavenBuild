@@ -19,7 +19,7 @@ environment {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/aryandoescode/MavenBuild.git', branch : 'master'
+                checkout scm
             }
         }
         stage('Build Automation') {
