@@ -37,7 +37,7 @@ spec:
   selector:
     app: devopssquad5
 ---
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: devopssquad5-hpa
