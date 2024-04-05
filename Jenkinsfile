@@ -1,30 +1,95 @@
-node(){
+pipeline {
+    agent any
+tools {
+  maven 'maven_home'
+  dockerTool 'docker'
+  
+}
+environment {
+        BASE_VERSION = "v1"
+        registry = "sahanabhasme19/mavenbuild"
+        DOCKER_CREDENTIALS = credentials('dockpass')
+        DOCKER_IMAGE = 'sahanabhasme19/mavenbuild:v1'
+        ARM_CLIENT_SECRET = credentials('client_secret')
+        ARM_CLIENT_ID = credentials('client_id')
+        ARM_SUBSCRIPTION_ID = credentials('sub_id')
+        ARM_TENANT_ID = credentials('ten_id')
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/aryandoescode/MavenBuild.git', branch : 'master'
+            }
+        }
+        stage('Build Automation') {
+            steps {
+                sh "mvn clean package"
+                archive 'target/*.war'
+            }
+        }
+        stage('Unit test') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                        }
+                }
+        }
 
-	def sonarHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-	
-	stage('Code Checkout'){
-		checkout changelog: false, poll: false, scm: scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'GitHubCreds', url: 'https://github.com/anujdevopslearn/MavenBuild']])
-	}
-	stage('Build Automation'){
-		sh """
-			ls -lart
-			mvn clean install
-			ls -lart target
-
-		"""
-	}
-	
-	stage('Code Scan'){
-		withSonarQubeEnv(credentialsId: 'SonarQubeCreds') {
-			sh "${sonarHome}/bin/sonar-scanner"
+        stage('Code quality check') {
+            steps {
+                withSonarQubeEnv('sonar') {
+			     sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar -Dsonar.properties=sonar-project.properties -Dsonar.projectKey=com.java:MavenBuild -Dsonar.projectName=Devops_squad_5"
 		}
-		
-	}
-	stage('Code Coverage ') {
-	    //sh "curl -o coverage.json 'http://35.154.151.174:9000/sonar/api/measures/component?componentKey=com.java.example:java-example&metricKeys=coverage';sonarCoverage=`jq '.component.measures[].value' coverage.json`;if [ 1 -eq '\$(echo '\${sonarCoverage} >= 50'| bc)' ]; then echo 'Failed' ;exit 1;else echo 'Passed'; fi"
-	}
-	
-	stage('Code Deployment'){
-		deploy adapters: [tomcat9(credentialsId: 'TomcatCreds', path: '', url: 'http://54.197.62.94:8080/')], contextPath: 'Planview', onFailure: false, war: 'target/*.war'
-	}
+            }
+        }
+        
+        stage("deploy to tomcat")
+        {
+            steps{
+                script{
+                    deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://13.82.21.94:8080')], contextPath: 'devops', war: 'target/*.war'
+                }
+            }
+        }
+        
+        stage('Building our image') {
+            steps{
+                script {
+                    docker.build(DOCKER_IMAGE)
+                }
+            }
+        }
+        stage('Deploy our image') {
+            steps{
+                script {
+                    sh 'docker login -u sahanabhasme19 -p ${DOCKER_CREDENTIALS}'
+                    sh 'docker push ${DOCKER_IMAGE}' 
+                    // docker.image(DOCKER_IMAGE).push('latest')
+                }
+            }
+        }
+        stage('Cleaning up') {
+            steps{
+                sh "docker rmi sahanabhasme19/mavenbuild:v1"
+                // 
+            }
+        }
+        stage('Aks Context set') {
+            steps{
+                sh "az aks get-credentials --resource-group aks-k8s-resources --name aks-k8s"
+                sh "kubectl apply -f deployment.yaml"
+                sh "kubectl delete hpa devopssquad5"
+                sh "kubectl autoscale deployment devopssquad5 --cpu-percent=50 --min=1 --max=3"
+                sh "kubectl get svc"
+                sh "kubectl get nodes"
+            }
+        }
+    }
+    
+
+        
 }
