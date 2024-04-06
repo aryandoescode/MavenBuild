@@ -50,8 +50,9 @@ environment {
         stage("deploy to tomcat")
         {
 		when {
-			branch 'refs/heads/master'
-		}
+                expression { 
+                    BRANCH_NAME == 'master' || BRANCH_NAME.startsWith('master')
+                }
             steps{
                 script{
                     deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://13.82.21.94:8080')], contextPath: 'devops', war: 'target/*.war'
