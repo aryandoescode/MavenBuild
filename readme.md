@@ -1,2 +1,0 @@
-sssssa
-sshello
