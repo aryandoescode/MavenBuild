@@ -17,11 +17,11 @@ environment {
     }
     
     stages {
-        // stage('Checkout') {
-        //     steps {
-        //         checkout scm
-        //     }
-        // }
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
         stage('Build Automation') {
             steps {
                 sh "mvn clean package"
