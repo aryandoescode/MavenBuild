@@ -23,6 +23,11 @@ environment {
             }
         }
         stage('Build Automation') {
+		when {
+                expression { 
+                    env.BRANCH_NAME == 'master'
+                }
+		}
             steps {
                 sh "mvn clean package"
                 archive 'target/*.war'
@@ -51,7 +56,7 @@ environment {
         {
 		when {
                 expression { 
-                    BRANCH_NAME == 'master'
+                    env.BRANCH_NAME == 'master'
                 }
 		}
             steps{
