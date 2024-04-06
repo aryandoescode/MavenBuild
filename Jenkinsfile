@@ -50,7 +50,7 @@ environment {
         stage("deploy to tomcat")
         {
 		when {
-			branch 'master'
+			branch '*/master'
 		}
             steps{
                 script{
