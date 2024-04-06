@@ -25,7 +25,7 @@ environment {
         stage('Build Automation') {
 		when {
                 expression { 
-                    env.BRANCH_NAME == 'master'
+                    env.BRANCH_NAME.startsWith('feature')
                 }
 		}
             steps {
