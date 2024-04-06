@@ -20,6 +20,7 @@ environment {
         stage('Checkout') {
             steps {
                 checkout scm
+		    echo "Current branch: ${env.BRANCH_NAME}"
             }
         }
         stage('Build Automation') {
