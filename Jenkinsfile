@@ -15,7 +15,7 @@ environment {
         ARM_SUBSCRIPTION_ID = credentials('sub_id')
         ARM_TENANT_ID = credentials('ten_id')
     }
-    
+    stages{
     
         stage('Build Automation') {
 		
@@ -45,11 +45,7 @@ environment {
         
         stage("deploy to tomcat")
         {
-		// when {
-  //               expression { 
-  //                   env.BRANCH_NAME == 'master'
-  //               }
-		// }
+		
             steps{
                 script{
                     deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://13.82.21.94:8080')], contextPath: 'devops', war: 'target/*.war'
@@ -58,9 +54,7 @@ environment {
         }
         
         stage('Building our image') {
-		// when {
-		// 	branch 'master'
-		// }
+		
             steps{
                 script {
                     docker.build(DOCKER_IMAGE)
@@ -68,9 +62,7 @@ environment {
             }
         }
         stage('Deploy our image') {
-		// when {
-		// 	branch 'master'
-		// }
+		
             steps{
                 script {
                     sh 'docker login -u sahanabhasme19 -p ${DOCKER_CREDENTIALS}'
@@ -80,18 +72,14 @@ environment {
             }
         }
         stage('Cleaning up') {
-		// when {
-		// 	branch 'master'
-		// }
+		
             steps{
                 sh "docker rmi sahanabhasme19/mavenbuild:v1"
                 // 
             }
         }
         stage('Aks Context set') {
-		// when {
-		// 	branch 'master'
-		// }
+		
             steps{
                 sh "az aks get-credentials --resource-group aks-k8s-resources --name aks-k8s"
                 sh "kubectl apply -f deployment.yaml"
