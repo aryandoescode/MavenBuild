@@ -19,8 +19,7 @@ environment {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
-		    echo "Current branch: ${env.BRANCH_NAME}"
+                git url: 'https://github.com/aryandoescode/MavenBuild.git', branch : 'master'
             }
         }
         stage('Build Automation') {
