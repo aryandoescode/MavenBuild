@@ -16,12 +16,7 @@ environment {
         ARM_TENANT_ID = credentials('ten_id')
     }
     
-    stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/aryandoescode/MavenBuild.git', branch : 'master'
-            }
-        }
+    
         stage('Build Automation') {
 		
             steps {
